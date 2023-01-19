@@ -32,6 +32,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+//comment
 
 app.UseAuthorization();
 
