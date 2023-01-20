@@ -21,12 +21,14 @@ namespace ProjectSignalR.Hubs
             Clients.All.SendAsync("updateTotalUsers", TotalUsers).GetAwaiter().GetResult();
             return base.OnDisconnectedAsync(exception);
         }
-        public async Task NewWindowLoaded()
+        // async operation that can return a value
+        public async Task<string> NewWindowLoaded()
         {
             TotalViews++;
             //send to all the clients that total views has been updated
             //updateTotalViews will be located inside the client side of the app
             await Clients.All.SendAsync("updateTotalViews", TotalViews);
+            return $"Total views is {TotalViews}";
         }
     }
 }

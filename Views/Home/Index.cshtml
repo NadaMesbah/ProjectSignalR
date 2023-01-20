@@ -1,14 +1,47 @@
 ﻿<div class="container">
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-3">Total Views: </div>
         <div class="col-4">
             <span id="totalViewsCounter"></span>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-3">Total Users: </div>
         <div class="col-4">
             <span id="totalUsersCounter"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">Send a message</div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-2">
+                            <label class="form-label">Sender</label>
+                            <input type="text" class="form-control" id="sendEmail" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Reciever</label>
+                            <input type="text" class="form-control" id="recieveEmail" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Message</label>
+                            <input type="text" class="form-control" id="chatMessage" />
+                        </div>
+                        <div class="mb-2">
+                            <button type="submit" class="btn btn-primary" value="Send Message">Send</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messageList"></ul>
         </div>
     </div>
 </div>
