@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using ProjectSignalR.Data;
 
 namespace ProjectSignalR.Hubs
@@ -15,6 +16,7 @@ namespace ProjectSignalR.Hubs
         { 
             await Clients.All.SendAsync("MessageRecieved", user, message);
         }
+        [Authorize]
         public async Task SendMessageToReciever(string sender, string reciever, string message) 
         {
             var userId = _db.Users.FirstOrDefault(u => u.Email.ToLower() == reciever.ToLower()).Id;
