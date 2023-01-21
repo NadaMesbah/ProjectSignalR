@@ -12,25 +12,25 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-5">
             <div class="card">
                 <div class="card-header">Send a message</div>
                 <div class="card-body">
                     <form>
                         <div class="mb-2">
                             <label class="form-label">Sender</label>
-                            <input type="text" class="form-control" id="sendEmail" />
+                            <input type="text" class="form-control" value="@User.Identity.Name" id="senderEmail"/>
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Reciever</label>
-                            <input type="text" class="form-control" id="recieveEmail" />
+                            <input type="text" class="form-control" id="recieverEmail" />
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Message</label>
                             <input type="text" class="form-control" id="chatMessage" />
                         </div>
                         <div class="mb-2">
-                            <button type="submit" class="btn btn-primary" value="Send Message">Send</button>
+                            <input type="button" id="sendMessage" class="btn btn-primary" value="Send Message" />
                         </div>
                     </form>
                 </div>
@@ -38,13 +38,12 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
+        <div class="col-5">
             <ul id="messageList"></ul>
         </div>
     </div>
 </div>
 
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/signalr.js"></script>
 <script src="~/js/usersCount.js"></script>
+<script src="~/js/chat.js"></script>
