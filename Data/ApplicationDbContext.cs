@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProjectSignalR.Models;
 
 namespace ProjectSignalR.Data
 {
@@ -9,5 +10,7 @@ namespace ProjectSignalR.Data
             : base(options)
         {
         }
+
+        public DbSet<ChatRoom> ChatRoom { get; set; }  
     }
 }
