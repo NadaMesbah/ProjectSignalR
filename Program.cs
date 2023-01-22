@@ -44,6 +44,7 @@ app.MapControllerRoute(
 app.MapRazorPages();
 //any methods in that hub can be accessed using this route
 app.MapHub<UserHub>("/hubs/userCount");
-app.MapHub<ChatHub>("/hubs/basicchat");
+app.MapHub<BasicChatHub>("/hubs/basicchat");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();
