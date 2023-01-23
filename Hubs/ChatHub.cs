@@ -21,7 +21,7 @@ namespace ProjectSignalR.Hubs
             {
                 //we want to retrieve the email of the logged in user
                 var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
-                Clients.Users(HubConnections.OnlineUsers()).SendAsync("RecieveConnectedUser",UserId, userName);
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("RecieveConnectedUser",UserId, userName, HubConnections.HasUser(UserId));
                 HubConnections.AddUserConnection(UserId,Context.ConnectionId);
             }
             return base.OnConnectedAsync();

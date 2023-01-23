@@ -16,7 +16,22 @@
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+        }
+        public static bool HasUser(string UsedId)
+        {
+            try
+            {
+                if (Users.ContainsKey(UsedId))
+                {
+                    return Users[UsedId].Any();
+                }
 
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
             }
             return false;
