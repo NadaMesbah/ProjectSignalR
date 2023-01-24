@@ -10,6 +10,12 @@ connectionC.on("RecieveConnectedUser", function (userId, userName, isOldConnecti
     }   
 });
 
+connectionC.on("RecieveDisconnectedUser", function (userId, userName, UserHasConnection) {
+    if (!UserHasConnection) {
+        addMessage(`${userName} is offline`);
+    }
+});
+
 function addMessage(msg) {
     if (msg == null && msg == '') {
         return;
