@@ -17,13 +17,11 @@ namespace ProjectSignalR.Hubs
         public override Task OnConnectedAsync()
         {
             var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (!String.IsNullOrEmpty(UserId))
             {
-                //we want to retrieve the email of the logged in user
                 var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
-                Clients.Users(HubConnections.OnlineUsers()).SendAsync("RecieveConnectedUser",UserId, userName);
-                HubConnections.AddUserConnection(UserId,Context.ConnectionId);
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserConnected", UserId, userName);
+                HubConnections.AddUserConnection(UserId, Context.ConnectionId);
             }
             return base.OnConnectedAsync();
         }
@@ -34,33 +32,29 @@ namespace ProjectSignalR.Hubs
 
             if (HubConnections.HasUserConnection(UserId, Context.ConnectionId))
             {
-                //we want to retrieve all the user connections
-                var userConnections = HubConnections.Users[UserId];
-                //we only want to remove one connection that has been disconnected 
-                userConnections.Remove(Context.ConnectionId);
-                //we want to start clean so we're gonna remove UserId and connections
-                HubConnections.Users.Remove(UserId);
+                var UserConnections = HubConnections.Users[UserId];
+                UserConnections.Remove(Context.ConnectionId);
 
-                if(userConnections.Any())
-                {
-                    HubConnections.Users.Add(UserId, userConnections);
-                }
+                HubConnections.Users.Remove(UserId);
+                if (UserConnections.Any())
+                    HubConnections.Users.Add(UserId, UserConnections);
             }
+
             if (!String.IsNullOrEmpty(UserId))
             {
-                //we want to retrieve the email of the logged in user
                 var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
-                Clients.Users(HubConnections.OnlineUsers()).SendAsync("RecieveDisconnectedUser", UserId, userName);
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserDisconnected", UserId, userName);
                 HubConnections.AddUserConnection(UserId, Context.ConnectionId);
             }
             return base.OnDisconnectedAsync(exception);
         }
+
         public async Task SendAddRoomMessage(int maxRoom, int roomId, string roomName)
         {
             var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
 
-            await Clients.All.SendAsync("RecieveAddRoomMessage", maxRoom, roomId, roomName, UserId, userName);
+            await Clients.All.SendAsync("ReceiveAddRoomMessage", maxRoom, roomId, roomName, UserId, userName);
         }
 
         public async Task SendDeleteRoomMessage(int deleted, int selected, string roomName)
@@ -68,8 +62,40 @@ namespace ProjectSignalR.Hubs
             var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
 
-            await Clients.All.SendAsync("RecieveDeleteRoomMessage", deleted, selected, roomName, userName);
+            await Clients.All.SendAsync("ReceiveDeleteRoomMessage", deleted, selected, roomName, userName);
         }
+
+        public async Task SendPublicMessage(int roomId, string message, string roomName)
+        {
+            var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = _db.Users.FirstOrDefault(u => u.Id == UserId).UserName;
+
+            await Clients.All.SendAsync("ReceivePublicMessage", roomId, UserId, userName, message, roomName);
+        }
+
+        public async Task SendPrivateMessage(string receiverId, string message, string receiverName)
+        {
+            var senderId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var senderName = _db.Users.FirstOrDefault(u => u.Id == senderId).UserName;
+
+            var users = new string[] { senderId, receiverId };
+
+            await Clients.Users(users).SendAsync("ReceivePrivateMessage", senderId, senderName, receiverId, message, Guid.NewGuid(), receiverName);
+        }
+
+        public async Task SendOpenPrivateChat(string receiverId)
+        {
+            var username = Context.User.FindFirstValue(ClaimTypes.Name);
+            var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            await Clients.User(receiverId).SendAsync("ReceiveOpenPrivateChat", userId, username);
+        }
+
+        public async Task SendDeletePrivateChat(string chartId)
+        {
+            await Clients.All.SendAsync("ReceiveDeletePrivateChat", chartId);
+        }
+
 
         //public async Task SendDeleteRoomMessage(string roomName)
         //{

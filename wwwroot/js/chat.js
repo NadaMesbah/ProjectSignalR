@@ -1,26 +1,64 @@
-﻿var connectionC = new signalR.HubConnectionBuilder()
+﻿var connection = new signalR.HubConnectionBuilder()
     .withUrl("/hubs/chat")
     .withAutomaticReconnect([0, 1000, 5000, null])
     .build();
 
-connectionC.on("RecieveConnectedUser", function (userId, userName) {
-        addMessage(`${userName} has joined`);
+connection.on("ReceiveUserConnected", function (userId, userName) {
+
+    addMessage(`${userName} has openned a connection`);
+
 });
 
-connectionC.on("RecieveDisconnectedUser", function (userId, userName) {
-        addMessage(`${userName} has left`);
+connection.on("ReceiveUserDisconnected", function (userId, userName) {
+
+    addMessage(`${userName} has closed a connection`);
+
 });
 
-connectionC.on("RecieveAddRoomMessage", function (maxRoom, roomId, roomName, userId, userName) {
-    addMessage(`${userName} has created room ${roomName}`);
+connection.on("ReceiveAddRoomMessage", function (maxRoom, roomId, roomName, userId, userName) {
+    addMessage(`${userName} has created room  ${roomName}`);
     fillRoomDropDown();
 });
 
-connectionC.on("RecieveDeleteRoomMessage", function (deleted, selected, roomName, userName) {
-    addMessage(`${userName} has deleted room ${roomName}`);
+connection.on("ReceiveDeleteRoomMessage", function (deleted, selected, roomName, userName) {
+    addMessage(`${userName} has deleted room  ${roomName}`);
 });
 
-function addNewRoom(maxRoom) {
+connection.on("ReceivePublicMessage", function (roomId, UserId, userName, message, roomName) {
+    addMessage(`[Public Message - ${roomName}] ${userName} says ${message}`);
+})
+
+connection.on("ReceivePrivateMessage", function (senderId, senderName, receiverId, message, chatId, receiverName) {
+    addMessage(`[Private Message to ${receiverName} ]${senderName} says ${message}`);
+})
+
+
+function sendPublicMessage() {
+    let inputMsg = document.getElementById('txtPublicMessage');
+    let ddlSelRoom = document.getElementById('ddlSelRoom');
+
+    let roomId = ddlSelRoom.value;
+    let roomName = ddlSelRoom.options[ddlSelRoom.selectedIndex].text;
+    var message = inputMsg.value;
+
+    connection.send("SendPublicMessage", Number(roomId), message, roomName);
+    inputMsg.value = '';
+
+}
+
+function sendPrivateMessage() {
+    let inputMsg = document.getElementById('txtPrivateMessage');
+    let ddlSelUser = document.getElementById('ddlSelUser');
+
+    let receiverId = ddlSelUser.value;
+    let receiverName = ddlSelUser.options[ddlSelUser.selectedIndex].text;
+    var message = inputMsg.value;
+
+    connection.send("SendPrivateMessage", receiverId, message, receiverName);
+    inputMsg.value = '';
+}
+
+function addnewRoom(maxRoom) {
 
     let createRoomName = document.getElementById('createRoomName');
 
@@ -29,6 +67,7 @@ function addNewRoom(maxRoom) {
     if (roomName == null && roomName == '') {
         return;
     }
+
     /*POST*/
     $.ajax({
         url: '/ChatRooms/PostChatRoom',
@@ -40,9 +79,12 @@ function addNewRoom(maxRoom) {
         processData: false,
         cache: false,
         success: function (json) {
+
             /*ADD ROOM COMPLETED SUCCESSFULLY*/
-            connection.invoke("SendAddRoomMessage", maxRoom, json.id, json.name);
+            connection.send("SendAddRoomMessage", maxRoom, json.id, json.name);
             createRoomName.value = '';
+
+
         },
         error: function (xhr) {
             alert('error');
@@ -60,11 +102,9 @@ function deleteRoom() {
     if (confirm(text) == false) {
         return;
     }
-
     if (roomName == null && roomName == '') {
         return;
     }
-
     let roomId = ddlDelRoom.value;
 
     $.ajax({
@@ -88,12 +128,12 @@ function deleteRoom() {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    //we're calling them when the DOM is loaded
     fillRoomDropDown();
     fillUserDropDown();
 })
 
 function fillUserDropDown() {
+
     $.getJSON('/ChatRooms/GetChatUser')
         .done(function (json) {
 
@@ -117,6 +157,7 @@ function fillUserDropDown() {
 }
 
 function fillRoomDropDown() {
+
     $.getJSON('/ChatRooms/GetChatRoom')
         .done(function (json) {
             var ddlDelRoom = document.getElementById("ddlDelRoom");
@@ -132,13 +173,11 @@ function fillRoomDropDown() {
                 newOption.value = item.id;
                 ddlDelRoom.add(newOption);
 
-
                 var newOption1 = document.createElement("option");
 
                 newOption1.text = item.name;
                 newOption1.value = item.id;
                 ddlSelRoom.add(newOption1);
-
             });
         })
         .fail(function (jqxhr, textStatus, error) {
@@ -152,11 +191,11 @@ function addMessage(msg) {
     if (msg == null && msg == '') {
         return;
     }
-    let ul = document.getElementById("messagesList");
+    let ui = document.getElementById('messagesList');
     let li = document.createElement("li");
-    li.style.listStyleType = 'none';
     li.innerHTML = msg;
-    ul.appendChild(li);
+    li.style.listStyleType = 'none';
+    ui.appendChild(li);
 }
 
-connectionC.start();
+connection.start();

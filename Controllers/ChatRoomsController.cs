@@ -57,15 +57,16 @@ namespace ProjectSignalR.Controllers
         [Route("/[controller]/PostChatRoom")]
         public async Task<ActionResult<ChatRoom>> PostChatRoom(ChatRoom chatRoom)
         {
-          if (_context.ChatRoom == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.ChatRoom'  is null.");
-          }
+            if (_context.ChatRoom == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.ChatRoom'  is null.");
+            }
             _context.ChatRoom.Add(chatRoom);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetChatRoom", new { id = chatRoom.Id }, chatRoom);
         }
+
 
         // DELETE: api/ChatRooms/5
         [HttpDelete("{id}")]
@@ -85,7 +86,9 @@ namespace ProjectSignalR.Controllers
             _context.ChatRoom.Remove(chatRoom);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            var room = await _context.ChatRoom.FirstOrDefaultAsync();
+
+            return Ok(new { deleted = id, selected = (room == null ? 0 : room.Id) });
         }
     }
 }
