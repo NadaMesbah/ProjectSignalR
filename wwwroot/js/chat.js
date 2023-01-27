@@ -21,7 +21,7 @@ connection.on("ReceiveAddRoomMessage", function (maxRoom, roomId, roomName, user
 });
 
 connection.on("ReceiveDeleteRoomMessage", function (deleted, selected, roomName, userName) {
-    addMessage(`${userName} has deleted room  ${roomName}`);
+    addMessage(`${userName} has deleted room  ${roomName}`); 
 });
 
 connection.on("ReceivePublicMessage", function (roomId, UserId, userName, message, roomName) {
